@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="토익카드 Mobile">
+    <title>토익 플래시카드 - iPhone</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            --accent: #f43f5e;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg); color: var(--text); margin: 0;
+            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+            padding: 15px; padding-bottom: 90px; padding-top: env(safe-area-inset-top);
+            user-select: none;
+        }
+
+        .view { display: none; width: 100%; flex-direction: column; align-items: center; flex: 1; }
+        .view.active { display: flex; }
+
+        /* HEADER (Mobile Style) */
+        .header { 
+            width: 100%; max-width: 800px; display: flex; justify-content: space-between; 
+            align-items: center; margin-bottom: 5px; background: white; padding: 10px 16px;
+            border-radius: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); min-height: 60px;
+        }
+        h1 { font-size: 1rem; margin: 0; color: var(--primary); white-space: nowrap; flex-shrink: 0; }
+        .header-controls { display: flex; gap: 6px; align-items: center; flex-direction: row; flex-wrap: nowrap; }
+        button.header-btn { padding: 8px 12px; font-size: 0.95rem; border-radius: 12px; min-width: 44px; height: 44px; border: none; font-weight: 700; cursor: pointer; }
+        button.primary { background: var(--primary); color: white; }
+        .mastered-btn.active { background: #059669; color: white; }
+
+        /* Centered Counter */
+        .mobile-counter-container { width: 100%; display: flex; justify-content: center; margin: 5px 0 10px 0; }
+        .stats-bubble { background: rgba(79, 70, 229, 0.1); color: var(--primary); padding: 4px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 800; }
+
+        /* Invisible Nav Zones - Narrow to prevent blocking flip */
+        .nav-zone { position: fixed; top: 150px; bottom: 100px; width: 20%; z-index: 100; }
+        .nav-left { left: 0; }
+        .nav-right { right: 0; }
+
+        /* Main Card Container */
+        .main-container { 
+            width: 100%; max-width: 1200px; perspective: 1000px; flex: 1; 
+            display: flex; flex-direction: column; justify-content: center;
+            position: relative; z-index: 200;
+        }
+        
+        .flashcard { width: 100%; aspect-ratio: 3/4; max-height: 550px; position: relative; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
+        .flashcard.is-flipped { transform: rotateY(180deg); }
+        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; background: var(--card-bg); border-radius: 24px; padding: 30px; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: var(--shadow); border: 1px solid rgba(0,0,0,0.05); }
+        .card-back { transform: rotateY(180deg); overflow-y: auto; display: block; }
+
+        .word { font-size: 3.5rem; font-weight: 800; color: var(--text); text-align: center; line-height: 1.1; }
+        .phonetic { font-size: 1.1rem; color: var(--text-light); margin-top: 5px; }
+
+        .meaning-section { width: 100%; margin-bottom: 15px; text-align: left; }
+        .pos-badge { display: inline-block; padding: 2px 8px; background: #eef2ff; color: var(--primary); border-radius: 6px; font-size: 0.75rem; font-weight: bold; margin-bottom: 5px; }
+        .def { font-size: 1.25rem; font-weight: 600; margin-bottom: 5px; line-height: 1.3; }
+        .toeic-note { font-size: 0.95rem; color: #b45309; background: #fffbeb; padding: 10px; border-radius: 12px; margin: 8px 0; font-weight: 500; }
+        .synonyms-box { font-size: 0.95rem; color: #475569; background: #f1f5f9; padding: 10px; border-radius: 12px; margin-top: 8px; display: flex; align-items: baseline; gap: 8px; }
+        .syn-label { font-weight: 800; color: var(--primary); font-size: 0.8rem; text-transform: uppercase; }
+
+        .ex-en { font-size: 1.1rem; color: var(--text); font-style: italic; margin-bottom: 3px; line-height: 1.4; }
+        .ex-ko { font-size: 0.9rem; color: var(--text-light); }
+
+        /* Voice View */
+        .voice-section { width: 100%; max-width: 600px; background: white; border-radius: 24px; padding: 30px; box-shadow: var(--shadow); text-align: center; }
+        .voice-btn { width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; background: var(--primary); color: white; margin: 0 auto 20px auto; border: none; }
+        .voice-btn.recording { background: var(--accent); animation: pulse 1.5s infinite; }
+        .streaming-transcript { width: 100%; min-height: 120px; background: #f8fafc; border: 2px dashed #e2e8f0; border-radius: 16px; padding: 15px; font-size: 1.1rem; line-height: 1.5; text-align: left; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(244, 63, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0); } }
+
+        /* Bottom Nav */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 75px; background: rgba(255,255,255,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid rgba(0,0,0,0.05); padding-bottom: env(safe-area-inset-bottom); z-index: 1000; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-light); font-size: 0.75rem; font-weight: 600; cursor: pointer; gap: 4px; }
+        .nav-item.active { color: var(--primary); }
+        .nav-icon { font-size: 1.3rem; }
+
+        /* Manage View (Mobile) */
+        .manage-list { width: 100%; max-width: 800px; display: flex; flex-direction: column; gap: 10px; }
+        .manage-item { background: white; padding: 15px 20px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .manage-word { font-weight: 700; font-size: 1.1rem; }
+        .manage-actions { display: flex; gap: 8px; }
+
+        @media (prefers-color-scheme: dark) {
+            :root { --bg: #020617; --card-bg: #1e293b; --text: #f1f5f9; --text-light: #94a3b8; }
+            .header, .bottom-nav, .card-face, .voice-section, .manage-item { background: #1e293b; border-color: #334155; }
+            .streaming-transcript { background: #0f172a; border-color: #334155; }
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-zone nav-left" onclick="prevCard()"></div>
+    <div class="nav-zone nav-right" onclick="nextCard()"></div>
+
+    <div class="header">
+        <h1>TOEIC Cards</h1>
+        <div class="header-controls">
+            <button class="header-btn" onclick="prevCard()">←</button>
+            <button id="masteredBtnMobile" class="header-btn" onclick="toggleMastered()">✓</button>
+            <button class="header-btn primary" onclick="nextCard()">→</button>
+        </div>
+    </div>
+
+    <div class="mobile-counter-container">
+        <div class="stats-bubble" id="counterMobile">1 / 12</div>
+    </div>
+
+    <!-- Views -->
+    <div id="viewStudy" class="view active">
+        <div class="main-container">
+            <div class="flashcard" id="card">
+                <div class="card-face card-front">
+                    <div class="word" id="wordText">Loading...</div>
+                    <div class="phonetic" id="phoneticText"></div>
+                </div>
+                <div class="card-face card-back" id="cardBack"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="viewTest" class="view">
+        <div class="voice-section">
+            <h2 style="margin:0 0 20px 0;">Test Mode</h2>
+            <div class="word" id="testWordText" style="margin: 30px 0; font-size: 2.5rem;">Word</div>
+            <button class="primary" style="width:100%; padding:15px; border-radius:12px; border:none; font-weight:700;" onclick="revealAnswer()">뜻 확인</button>
+            <div id="testAnswerArea" style="display:none; margin-top:30px; text-align:left;">
+                <div id="testBackContent"></div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-top:20px;">
+                    <button onclick="testResult(false)" style="background:#fee2e2; color:#b91c1c; padding:15px; border-radius:12px; border:none;">X</button>
+                    <button onclick="testResult(true)" style="background:#dcfce7; color:#15803d; padding:15px; border-radius:12px; border:none;">O</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="viewManage" class="view">
+        <div class="header" style="max-width:800px; margin-bottom:20px;">
+            <h2 style="margin:0; font-size:1.2rem;">단어 관리</h2>
+            <div class="stats-bubble" id="manageStats">0</div>
+        </div>
+        <div class="manage-list" id="manageList"></div>
+    </div>
+
+    <div id="viewAdd" class="view">
+        <div class="voice-section">
+            <h2>단어 추가</h2>
+            <button id="voiceBtn" onclick="toggleVoice()">🎙️</button>
+            <div id="voiceStatus" style="font-weight:700; color:var(--primary); margin-bottom:15px;">대기</div>
+            <div id="transcriptArea" class="streaming-transcript" contenteditable="true"></div>
+            <button class="primary" style="width:100%; padding:15px; margin-top:15px; border-radius:12px; border:none;" onclick="processTranscript()">일괄 추가</button>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="switchView('study')" id="navStudy"><span class="nav-icon">📖</span><span>학습</span></div>
+        <div class="nav-item" onclick="switchView('test')" id="navTest"><span class="nav-icon">🎯</span><span>테스트</span></div>
+        <div class="nav-item" onclick="switchView('manage')" id="navManage"><span class="nav-icon">📊</span><span>관리</span></div>
+        <div class="nav-item" onclick="switchView('add')" id="navAdd"><span class="nav-icon">🎙️</span><span>추가</span></div>
+    </nav>
+
+    <div class="version-tag">v1.0.3</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="db.js"></script>
+    <script>
+        let currentIndex = 0;
+        let masteredWords = JSON.parse(localStorage.getItem('toeic_mastered') || '[]');
+        let wordData = [];
+        let displayList = [];
+
+        const card = document.getElementById('card');
+        const cardBack = document.getElementById('cardBack');
+
+        function switchView(viewName) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('view' + viewName.charAt(0).toUpperCase() + viewName.slice(1)).classList.add('active');
+            document.getElementById('nav' + viewName.charAt(0).toUpperCase() + viewName.slice(1)).classList.add('active');
+            if (viewName === 'study') refreshList();
+            if (viewName === 'test') startTest();
+            if (viewName === 'manage') renderManageList();
+        }
+
+        async function refreshList() {
+            wordData = await dbFetchWords();
+            displayList = wordData;
+            if (currentIndex >= displayList.length) currentIndex = 0;
+            updateUI();
+        }
+
+        function updateUI() {
+            if (displayList.length === 0) return;
+            const current = displayList[currentIndex];
+            document.getElementById('wordText').textContent = current.word;
+            document.getElementById('phoneticText').textContent = current.phonetic || "";
+
+            function boldWord(text, word) {
+                if (!text || !word) return text;
+                const cleanText = text.replace(/\*\*/g, '');
+                const parts = word.split(' ').filter(p => p.length > 2);
+                let result = cleanText;
+                if (parts.length > 1) {
+                    parts.forEach(p => {
+                        const escaped = p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                        result = result.replace(new RegExp(`(\\b${escaped}[a-z]*\\b)`, 'gi'), '<b>$1</b>');
+                    });
+                } else {
+                    const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    result = result.replace(new RegExp(`(\\b${escaped}[a-z]*\\b)`, 'gi'), '<b>$1</b>');
+                }
+                return result;
+            }
+
+            let html = '';
+            current.meanings?.forEach(m => {
+                let exHtml = '';
+                m.examples?.forEach(e => exHtml += `<div style="margin-bottom:8px;"><div class="ex-en">${boldWord(e.en, current.word)}</div><div class="ex-ko">${e.ko}</div></div>`);
+                
+                let synHtml = '';
+                if (m.synonyms) {
+                    const synItems = m.synonyms.split(',').map(s => 
+                        `<span style="display:inline-block; margin-right:10px; white-space:nowrap;">${s.trim()}</span>`
+                    ).join('');
+                    synHtml = `
+                        <div style="border-top: 1px solid #e2e8f0; margin-top:12px; padding-top:10px; font-size:0.95rem; color:#64748b;">
+                            <span style="font-weight:800; color:var(--primary); font-size:0.75rem; text-transform:uppercase; display:block; margin-bottom:3px;">Synonyms</span>
+                            ${synItems}
+                        </div>`;
+                }
+
+                const noteContent = `
+                    <div class="toeic-note">
+                        <div style="margin-bottom:5px;">💡 ${m.toeic_note}</div>
+                        ${m.etymology ? `<div style="font-size:0.85rem; color:#92400e; border-top:1px solid #fef3c7; padding-top:5px;"><b>[어원]</b> ${m.etymology}</div>` : ''}
+                    </div>`;
+
+                html += `
+                    <div class="meaning-section" style="border-bottom:1px solid #f1f5f9; padding-bottom:15px; margin-bottom:15px;">
+                        <span class="pos-badge">${m.pos}</span>
+                        <div class="def">${m.definition}</div>
+                        ${noteContent}
+                        <div class="examples" style="margin-top:10px;">${exHtml}</div>
+                        ${synHtml}
+                    </div>`;
+            });
+            cardBack.innerHTML = html;
+            document.getElementById('counterMobile').textContent = `${currentIndex + 1} / ${displayList.length}`;
+            document.getElementById('masteredBtnMobile').classList.toggle('active', masteredWords.includes(current.word));
+            card.classList.remove('is-flipped');
+        }
+
+        function nextCard() { currentIndex = (currentIndex + 1) % displayList.length; updateUI(); }
+        function prevCard() { currentIndex = (currentIndex - 1 + displayList.length) % displayList.length; updateUI(); }
+        function toggleMastered(w) {
+            const word = w || displayList[currentIndex].word;
+            if (masteredWords.includes(word)) masteredWords = masteredWords.filter(x => x !== word);
+            else masteredWords.push(word);
+            localStorage.setItem('toeic_mastered', JSON.stringify(masteredWords));
+            if (document.getElementById('viewManage').classList.contains('active')) renderManageList(); else updateUI();
+        }
+
+        let rec; let isR = false;
+        function toggleVoice() { if(isR) stopV(); else startV(); }
+        function startV() {
+            rec = new webkitSpeechRecognition(); rec.lang = 'en-US'; rec.continuous = true; rec.interimResults = true;
+            rec.onstart = () => { isR = true; document.getElementById('voiceBtn').className = 'voice-btn recording'; document.getElementById('voiceStatus').textContent = "듣는 중..."; };
+            rec.onresult = (e) => {
+                let f = '', i = '';
+                for(let k=0; k<e.results.length; ++k) { if(e.results[k].isFinal) f += e.results[k][0].transcript + " "; else i += e.results[k][0].transcript; }
+                document.getElementById('transcriptArea').innerHTML = f + '<span style="color:#94a3b8;">' + i + '</span>';
+            };
+            rec.onend = () => { if(isR) rec.start(); }; rec.start();
+        }
+        function stopV() { isR = false; rec.stop(); document.getElementById('voiceBtn').className = 'voice-btn'; document.getElementById('voiceStatus').textContent = "종료"; }
+        async function processTranscript() {
+            const t = document.getElementById('transcriptArea').innerText.trim(); if(!t) return;
+            const words = t.split(/[\n,]+/).map(w=>w.trim()).filter(x=>x.length>0);
+            try {
+                for (const w of words) { await dbAddWord(w); }
+            } catch (error) {
+                console.error('Insert failed:', error);
+                alert(`추가 실패: ${error.message || error}`);
+                return;
+            }
+            document.getElementById('transcriptArea').innerText = "";
+            await refreshList(); switchView('manage');
+        }
+
+        function renderManageList() {
+            const list = document.getElementById('manageList'); list.innerHTML = '';
+            [...wordData].reverse().forEach((item) => {
+                const isM = masteredWords.includes(item.word);
+                const safeWord = item.word.replace(/'/g, "\\'");
+                const div = document.createElement('div'); div.className = 'manage-item';
+                div.innerHTML = `<div class="manage-word">${item.word}</div><div class="manage-actions"><button class="header-btn mastered-btn ${isM?'active':''}" style="min-width:30px; height:30px; font-size:0.7rem;" onclick="toggleMastered('${safeWord}')">✓</button><button onclick="editWord(${item.id})" style="border:none; background:none;">✏️</button><button onclick="deleteWord(${item.id})" style="border:none; background:none;">🗑️</button></div>`;
+                list.appendChild(div);
+            });
+            document.getElementById('manageStats').textContent = `${masteredWords.length} / ${wordData.length}`;
+        }
+        async function editWord(id) {
+            const item = wordData.find(w => w.id === id); if (!item) return;
+            const n = prompt("수정:", item.word);
+            if (n && n.trim()) { await dbUpdateWord(id, { word: n.trim() }); await refreshList(); renderManageList(); }
+        }
+        async function deleteWord(id) {
+            if (confirm("삭제하시겠습니까?")) { await dbDeleteWord(id); await refreshList(); renderManageList(); }
+        }
+
+        function startTest() {
+            document.getElementById('testAnswerArea').style.display='none';
+            document.getElementById('testWordText').textContent = displayList[currentIndex].word;
+            let h = ''; displayList[currentIndex].meanings?.forEach(m => h += `<div><b>[${m.pos}]</b> ${m.definition}</div>`);
+            document.getElementById('testBackContent').innerHTML = h;
+        }
+        function revealAnswer() { document.getElementById('testAnswerArea').style.display='block'; }
+        function testResult(k) { nextCard(); startTest(); }
+
+        card.addEventListener('click', () => { card.classList.toggle('is-flipped'); });
+        refreshList();
+    </script>
+</body>
+</html>

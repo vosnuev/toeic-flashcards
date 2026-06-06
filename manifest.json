@@ -1,0 +1,10 @@
+{
+  "name": "토익 플래시카드",
+  "short_name": "TOEIC Cards",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#4f46e5",
+  "icons": []
+}
