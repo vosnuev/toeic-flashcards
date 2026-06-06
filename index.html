@@ -64,7 +64,18 @@
         .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; background: var(--card-bg); border-radius: 24px; padding: 30px; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: var(--shadow); border: 1px solid rgba(0,0,0,0.05); }
         .card-back { transform: rotateY(180deg); overflow-y: auto; display: block; }
 
-        .word { font-size: 3.5rem; font-weight: 800; color: var(--text); text-align: center; line-height: 1.1; }
+        .word {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--text);
+            text-align: center;
+            line-height: 1.05;
+            white-space: nowrap;
+            width: 100%;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: clip;
+        }
         .phonetic { font-size: 1.1rem; color: var(--text-light); margin-top: 5px; }
 
         .meaning-section { width: 100%; margin-bottom: 15px; text-align: left; }
@@ -203,10 +214,29 @@
             updateUI();
         }
 
+        function applyWordSizing(element, word) {
+            if (!element) return;
+            const letters = String(word || '').replace(/\s+/g, '').length;
+            let sizeRem = 3.5;
+
+            if (letters > 8) {
+                sizeRem = 3.5 - ((letters - 8) * 0.22);
+            }
+
+            if (letters > 16) {
+                sizeRem -= Math.min(0.35, (letters - 16) * 0.04);
+            }
+
+            sizeRem = Math.max(1.85, Math.min(3.5, sizeRem));
+            element.style.fontSize = `${sizeRem}rem`;
+        }
+
         function updateUI() {
             if (displayList.length === 0) return;
             const current = displayList[currentIndex];
-            document.getElementById('wordText').textContent = current.word;
+            const wordText = document.getElementById('wordText');
+            wordText.textContent = current.word;
+            applyWordSizing(wordText, current.word);
             document.getElementById('phoneticText').textContent = current.phonetic || "";
 
             function boldWord(text, word) {
@@ -323,7 +353,9 @@
 
         function startTest() {
             document.getElementById('testAnswerArea').style.display='none';
-            document.getElementById('testWordText').textContent = displayList[currentIndex].word;
+            const testWordText = document.getElementById('testWordText');
+            testWordText.textContent = displayList[currentIndex].word;
+            applyWordSizing(testWordText, displayList[currentIndex].word);
             let h = ''; displayList[currentIndex].meanings?.forEach(m => h += `<div><b>[${m.pos}]</b> ${m.definition}</div>`);
             document.getElementById('testBackContent').innerHTML = h;
         }
