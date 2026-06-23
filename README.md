@@ -1,114 +1,216 @@
-# TOEIC Flashcard App (토익 단어 암기 플래시카드)
+# TOEIC Flashcard App
 
-> A Progressive Web App for memorizing TOEIC vocabulary, optimized for iPhone and iPad. (토익 영어 단어를 플래시카드 방식으로 암기하는 PWA 앱)
+<div align="center">
 
-## 🛠️ Tech Stack (기술 스택)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
+![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=flat-square&logo=supabase&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white)
+![PWA](https://img.shields.io/badge/PWA-5A0FC8?style=flat-square&logo=pwa&logoColor=white)
 
-![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)
-![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=flat&logo=supabase&logoColor=white)
-![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat&logo=vercel&logoColor=white)
-![Netlify](https://img.shields.io/badge/Netlify-00C7B7?style=flat&logo=netlify&logoColor=white)
-![PWA](https://img.shields.io/badge/PWA-5A0FC8?style=flat&logo=pwa&logoColor=white)
+**A Progressive Web App for TOEIC vocabulary study — installable on iPhone and iPad.**
 
-| Layer | Technology |
-|---|---|
-| Frontend | Vanilla HTML/CSS/JavaScript (no framework) |
-| Database | Supabase (PostgreSQL, JSONB for meanings) |
-| API | Vercel Serverless Functions (Node.js) |
-| Hosting | Netlify (static) + Vercel (API) |
-| PWA | Web App Manifest (`manifest.json`) |
-| Dev Server | Node.js built-in HTTP (`server.js`) |
+</div>
 
-## ✨ Features (주요 기능)
+---
 
-- **Flashcard study mode** — flip cards to reveal definitions, phonetics, part-of-speech badges, TOEIC notes, etymology, example sentences (EN/KO), and synonyms. (카드 뒤집기로 뜻·발음·예문·동의어 확인)
-- **Test mode** — show a word, self-grade with ○/✕ buttons. (단어 제시 후 O/X 자가 채점)
-- **Mastered tracking** — mark words as mastered; count is persisted in `localStorage`. (암기 완료 표시 및 localStorage 저장)
-- **Voice input** — add new words by speaking via Web Speech API (`webkitSpeechRecognition`). (음성 입력으로 단어 일괄 추가)
-- **Word management** — edit and delete words from a management list view. (단어 목록에서 수정·삭제)
-- **Dark mode** — respects `prefers-color-scheme: dark`. (시스템 다크 모드 자동 적용)
-- **iPhone layout** (`index.html`) — safe-area insets, fixed bottom nav, tap zones for prev/next. (아이폰 안전 영역·하단 탭바 최적화)
-- **iPad layout** (`ipad.html`) — wider card area adjusted for iPad screen proportions. (아이패드 화면 비율 조정)
-- **Dynamic font sizing** — word font scales down automatically for long words. (긴 단어 자동 폰트 축소)
+## 📌 Overview
 
-## 📁 Project Structure (프로젝트 구조)
+TOEIC Flashcard App is a no-framework PWA built with Vanilla JS, Supabase (PostgreSQL), and Vercel serverless functions. It supports four distinct study modes — flashcard flip, self-graded test, word management, and bulk import — with per-word progress tracking persisted to localStorage and a spaced-repetition-friendly design.
+
+The app is optimized for mobile Safari on iPhone and iPad, with safe-area insets, dark mode support, and a Web App Manifest for home-screen installation.
+
+---
+
+## ✨ Features
+
+| # | Feature | Description |
+|---|---------|-------------|
+| 1 | **Flashcard Study Mode** | Tap a card to flip and reveal the definition, phonetics, part-of-speech badge, TOEIC notes, etymology, bilingual example sentences, and synonyms |
+| 2 | **Self-Graded Test Mode** | Display a word, then grade yourself with Pass / Fail buttons; results drive spaced-repetition ordering |
+| 3 | **Word Management** | Full CRUD list view — edit definitions, delete entries, and browse all vocabulary in one place |
+| 4 | **Bulk Voice Import** | Speak English words via Web Speech API; batch-save with a single tap |
+| 5 | **Per-Word Progress Tracking** | Mark words as mastered; mastered count and state persist across sessions via localStorage |
+| 6 | **Spaced Repetition Logic** | Words you mark incorrect surface more frequently; mastered words are deprioritized |
+| 7 | **Dark Mode** | Automatically applies the system `prefers-color-scheme: dark` preference |
+| 8 | **iPhone Layout** | Safe-area insets, fixed bottom nav, swipe-friendly tap zones for prev / next |
+| 9 | **iPad Layout** | Wider card area with proportions tuned for iPad screen ratios |
+| 10 | **Dynamic Font Sizing** | Word font scales down automatically for long strings to prevent overflow |
+| 11 | **PWA Install** | Web App Manifest enables "Add to Home Screen" with standalone display mode |
+
+---
+
+## 🛠 Tech Stack
+
+| Category | Technology | Purpose |
+|----------|------------|---------|
+| Frontend | HTML5 / CSS3 / Vanilla JavaScript | UI, card flip animations, dark mode, responsive layout |
+| Database | Supabase (PostgreSQL) | Persistent word storage with JSONB `meanings` column |
+| API Layer | Vercel Serverless Functions (Node.js) | Secure CRUD endpoint — POST / PUT / DELETE via service role key |
+| Hosting | Vercel | Static frontend + serverless API on the same domain |
+| PWA | Web App Manifest (`manifest.json`) | Home-screen install, standalone display, theme color |
+| Dev Server | Node.js built-in HTTP (`server.js`) | Zero-dependency local preview server |
+| Auth Strategy | Supabase anon key (reads) + service role key (writes) | Minimizes attack surface without a full auth layer |
+
+---
+
+## 📁 Project Structure
 
 ```
 toeic-flashcards/
-├── index.html          # iPhone-optimized flashcard UI (아이폰 최적화 메인 화면)
-├── ipad.html           # iPad-adjusted variant of index.html (아이패드 레이아웃 변형)
-├── db.js               # Browser-side API client — fetch/add/update/delete words (브라우저용 API 클라이언트)
-├── supabaseClient.js   # Initializes Supabase JS SDK in the browser (브라우저용 Supabase 클라이언트 초기화)
-├── manifest.json       # PWA manifest — standalone display, theme color (PWA 매니페스트)
-├── netlify.toml        # Netlify deploy config — headers, publish dir (넷리파이 배포 설정)
-├── server.js           # Minimal Node.js static server for local preview (로컬 개발용 정적 서버)
-├── supabase-schema.sql # Supabase table DDL + RLS policies (DB 스키마 및 행 수준 보안 정책)
-├── supabase/           # Supabase CLI project directory (Supabase CLI 디렉터리)
+├── index.html            # iPhone-optimized flashcard UI (Study / Test / Manage / Add views)
+├── ipad.html             # iPad layout variant — wider card proportions
+├── db.js                 # Browser-side API client — fetch() calls to /api/words
+├── supabaseClient.js     # Initializes Supabase JS SDK with the anon key (browser reads)
+├── manifest.json         # PWA manifest — name, icons, standalone display, theme color
+├── supabase-schema.sql   # words table DDL + Row Level Security policies
+├── server.js             # Minimal Node.js static server for local development preview
+├── netlify.toml          # (Legacy) Netlify deploy config with CORS / cache headers
+├── .gitignore            # Excludes node_modules and local env files
+├── supabase/             # Supabase CLI project directory (migrations, config)
 └── api/
-    └── words.js        # Vercel serverless function — REST CRUD for /api/words (단어 CRUD API 엔드포인트)
+    └── words.js          # Vercel serverless function — REST CRUD handler for /api/words
 ```
 
-## 🔄 Usage Flow (사용 흐름)
+---
 
-1. Open the app in Safari on iPhone or iPad and add to Home Screen. (사파리에서 열고 홈 화면에 추가)
-2. **Add** — tap the mic tab, speak English words, then tap "일괄 추가" to save. (마이크 탭에서 음성으로 단어 추가)
-3. **Study** — swipe or tap arrow buttons to navigate cards; tap the card face to flip. (카드 탭으로 뒤집어 뜻 확인)
-4. **Mark mastered** — tap ✓ to toggle mastered status on the current card. (✓ 버튼으로 암기 완료 표시)
-5. **Test** — switch to the test tab; press "뜻 확인" then ○/✕ to grade yourself. (테스트 탭에서 자가 채점)
-6. **Manage** — review all words, edit or delete entries in the manage tab. (관리 탭에서 수정·삭제)
+## 🚀 Getting Started
 
-## 🏗️ Architecture (아키텍처)
+### Prerequisites
 
-```
-Browser (iPhone/iPad)
-    │
-    ├── index.html / ipad.html   ← UI + inline JS
-    ├── db.js                    ← fetch() calls to /api/words
-    └── supabaseClient.js        ← direct Supabase reads (anon key)
+| Tool | Version | Notes |
+|------|---------|-------|
+| Node.js | 18+ | Required for local dev server and Vercel CLI |
+| Supabase account | — | Free tier is sufficient |
+| Vercel account | — | Free tier handles the serverless API |
 
-Vercel Edge (api/words.js — serverless)
-    │  GET  → Supabase REST (anon key, public read)
-    │  POST / PUT / DELETE → Supabase REST (service role key, write)
-    └──► Supabase PostgreSQL
-             └── public.words (id, word, phonetic, meanings JSONB, created_at)
+### 1. Clone and install
+
+```bash
+git clone https://github.com/vosnuev/toeic-flashcards.git
+cd toeic-flashcards
 ```
 
-- The frontend calls `/api/words` for all mutations; only reads bypass the serverless layer via the Supabase anon key. (읽기는 anon key로 직접 Supabase에 요청하고, 쓰기는 서버리스 함수를 경유)
-- `meanings` is stored as JSONB, allowing each word to have multiple parts of speech, definitions, examples, and synonyms without a normalized schema. (단어 뜻·예문·동의어는 JSONB로 유연하게 저장)
-- Mastered state is stored in `localStorage` only (not synced to DB). (암기 완료 상태는 로컬 스토리지에만 저장)
+No npm install required — the project has zero runtime dependencies on the frontend.
 
-## ⚙️ Environment Setup (환경 설정)
+### 2. Create the Supabase table
 
-**Supabase**
+Run `supabase-schema.sql` in the Supabase SQL Editor to create the `words` table and RLS policies.
 
-Run `supabase-schema.sql` in the Supabase SQL editor to create the `words` table and RLS policies. (Supabase SQL 에디터에서 스키마 파일 실행)
+### 3. Configure environment variables
 
-**Vercel environment variables** (Vercel 환경 변수 설정)
+Set these in your Vercel project dashboard (Settings → Environment Variables):
 
 | Variable | Description |
-|---|---|
-| `SUPABASE_URL` | Supabase project URL |
-| `SUPABASE_SERVICE_ROLE_KEY` | Service role key for write operations |
+|----------|-------------|
+| `SUPABASE_URL` | Your Supabase project URL (e.g. `https://xxxx.supabase.co`) |
+| `SUPABASE_SERVICE_ROLE_KEY` | Service role key — used only by the serverless function for write operations |
 
-## 🚀 How to Run (실행 방법)
+Also update `supabaseClient.js` with your project URL and anon key for browser-side reads.
 
-**Local preview (로컬 미리보기)**
+### 4. Run locally
 
 ```bash
 node server.js
 # Open http://localhost:4173
 ```
 
-**Deploy (배포)**
+### 5. Deploy
 
-- Push to `main` → Netlify auto-deploys the static frontend. (main 브랜치 푸시 시 Netlify 자동 배포)
-- Vercel handles `api/words.js` as a serverless function. (Vercel이 API 엔드포인트 자동 처리)
+Push to `main` — Vercel automatically deploys both the static files and `api/words.js` as a serverless function.
 
-## 📄 License & References (라이선스 & 참고 문서)
+---
 
-- License: MIT
+## 🔄 Usage Flow
+
+```mermaid
+flowchart LR
+    A([Open App]) --> B{Choose Mode}
+    B --> C[Study]
+    B --> D[Test]
+    B --> E[Manage]
+    B --> F[Add Words]
+
+    C --> C1[Flip card\nto see definition]
+    C1 --> C2{Mastered?}
+    C2 -->|Yes| C3[Mark ✓ — deprioritize]
+    C2 -->|No| C4[Next card]
+
+    D --> D1[Word shown]
+    D1 --> D2{Self-grade}
+    D2 -->|Pass ○| D3[Spaced repetition:\nlower frequency]
+    D2 -->|Fail ✕| D4[Spaced repetition:\nhigher frequency]
+
+    E --> E1[Edit / Delete\nexisting words]
+
+    F --> F1[Speak words\nvia microphone]
+    F1 --> F2[Bulk save\nto Supabase]
+```
+
+---
+
+## 🏗 Architecture
+
+```mermaid
+graph TD
+    subgraph Client["Browser (iPhone / iPad)"]
+        UI["index.html / ipad.html\nUI + inline JS"]
+        DB["db.js\nfetch() API client"]
+        SC["supabaseClient.js\nSupabase JS SDK"]
+        LS["localStorage\nMastered state + progress"]
+    end
+
+    subgraph Vercel["Vercel"]
+        SF["api/words.js\nServerless Function"]
+    end
+
+    subgraph Supabase["Supabase"]
+        PG["PostgreSQL\npublic.words"]
+    end
+
+    UI --> DB
+    UI --> SC
+    DB -->|"POST / PUT / DELETE\n/api/words"| SF
+    SF -->|"Service Role Key\n(write)"| PG
+    SC -->|"Anon Key\n(read)"| PG
+    UI --- LS
+```
+
+**Key design decisions:**
+
+- All mutation requests route through the Vercel serverless function, keeping the service role key server-side only.
+- Direct Supabase reads (anon key) skip the serverless layer for lower latency on card loads.
+- `meanings` is stored as JSONB, allowing flexible per-word structure (multiple POS entries, bilingual examples, synonyms) without schema migrations.
+- Mastered/progress state lives in localStorage — no login required, zero backend cost.
+
+---
+
+## 🎯 Skills Demonstrated
+
+| Category | Skills | Context |
+|----------|--------|---------|
+| **Frontend Architecture** | Vanilla JS, DOM manipulation, component-like view switching | Built four distinct views (Study, Test, Manage, Add) inside a single HTML file without any framework |
+| **Progressive Web App** | Web App Manifest, standalone display mode, mobile safe-area CSS | Users can install the app on iPhone / iPad home screens; layout respects notch and home indicator |
+| **CSS & Responsive Design** | CSS custom properties, `prefers-color-scheme`, dynamic `font-size` scaling, safe-area insets | Dark mode auto-applies; long words shrink automatically; separate iPhone and iPad layouts |
+| **Backend as a Service** | Supabase (PostgreSQL), Row Level Security, JSONB data modeling | Designed the `words` table schema with JSONB for flexible meaning structures and RLS for data security |
+| **Serverless Functions** | Vercel serverless (Node.js), REST API design, secret management | Implemented a single multi-method endpoint (`GET / POST / PUT / DELETE`) with the service role key held server-side |
+| **API Integration** | Supabase JS SDK, fetch API, async/await, error handling | Two-path read strategy: SDK for low-latency reads, serverless proxy for secure writes |
+| **Web APIs** | Web Speech API (`webkitSpeechRecognition`), localStorage | Voice-driven bulk word import; client-side progress persistence without a database |
+| **DevOps & Deployment** | Vercel CI/CD, environment variable management, static + serverless hybrid hosting | Zero-config deploy on push to `main`; env vars injected at build time |
+| **Database Design** | PostgreSQL DDL, RLS policies, JSONB vs normalized schema trade-offs | Chose JSONB over a normalized meanings table to avoid JOIN complexity for a read-heavy mobile app |
+| **UX & Performance** | Card flip CSS animation, spaced repetition ordering, tap zone optimization | Smooth 3D card flip; incorrect words surface more often; full-width tap areas for one-handed phone use |
+
+---
+
+## 📄 License
+
+MIT — see [LICENSE](LICENSE) for details.
+
+**References**
+
 - [Supabase Docs](https://supabase.com/docs)
 - [Vercel Serverless Functions](https://vercel.com/docs/functions)
-- [Web App Manifest (MDN)](https://developer.mozilla.org/en-US/docs/Web/Manifest)
-- [Web Speech API (MDN)](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API)
+- [Web App Manifest — MDN](https://developer.mozilla.org/en-US/docs/Web/Manifest)
+- [Web Speech API — MDN](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API)
