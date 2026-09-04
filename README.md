@@ -45,8 +45,8 @@
 | 분류 | 기술 | 역할 |
 |------|------|------|
 | Frontend | HTML5, CSS3, Vanilla JavaScript | UI 구성, 카드 뒤집기 애니메이션, 다크 모드, 반응형 레이아웃 |
-| Database | Supabase (PostgreSQL) | 단어 영구 저장 — JSONB `meanings` 컬럼 사용 |
-| API Layer | Vercel Serverless Functions (Node.js) | 보안 CRUD 엔드포인트 — POST / PUT / DELETE 처리 |
+| Database | Supabase (PostgreSQL) | 단어 영구 저장 - JSONB `meanings` 컬럼 사용 |
+| API Layer | Vercel Serverless Functions (Node.js) | 보안 CRUD 엔드포인트 - POST / PUT / DELETE 처리 |
 | Hosting | Vercel | 정적 프론트엔드 + Serverless API 통합 배포 |
 | PWA | Web App Manifest (`manifest.json`) | 홈 화면 설치, standalone 모드, 테마 색상 설정 |
 | 로컬 서버 | Node.js 내장 HTTP (`server.js`) | 의존성 없는 로컬 개발 서버 |
@@ -58,17 +58,17 @@
 ```
 toeic-flashcards/
 ├── index.html            # iPhone 최적화 메인 UI (학습 / 테스트 / 관리 / 단어추가 뷰)
-├── ipad.html             # iPad 레이아웃 변형 — 넓은 카드 비율
-├── db.js                 # 브라우저 API 클라이언트 — /api/words 로 fetch() 호출
+├── ipad.html             # iPad 레이아웃 변형 - 넓은 카드 비율
+├── db.js                 # 브라우저 API 클라이언트 - /api/words 로 fetch() 호출
 ├── supabaseClient.js     # Supabase JS SDK 초기화 (anon key 사용, 브라우저 읽기 전용)
-├── manifest.json         # PWA manifest — 이름, 아이콘, standalone 모드, 테마 색상
+├── manifest.json         # PWA manifest - 이름, 아이콘, standalone 모드, 테마 색상
 ├── supabase-schema.sql   # words 테이블 DDL + Row Level Security 정책
 ├── server.js             # 로컬 개발용 간이 Node.js 정적 서버
-├── netlify.toml          # (레거시) Netlify 배포 설정 — CORS / 캐시 헤더
+├── netlify.toml          # (레거시) Netlify 배포 설정 - CORS / 캐시 헤더
 ├── .gitignore            # node_modules 및 로컬 환경 파일 제외
 ├── supabase/             # Supabase CLI 프로젝트 디렉터리 (마이그레이션, 설정)
 └── api/
-    └── words.js          # Vercel Serverless Function — /api/words REST CRUD 핸들러
+    └── words.js          # Vercel Serverless Function - /api/words REST CRUD 핸들러
 ```
 
 ---
@@ -80,8 +80,8 @@ toeic-flashcards/
 | 항목 | 버전 | 비고 |
 |------|------|------|
 | Node.js | 18 이상 | 로컬 개발 서버 및 Vercel CLI 실행에 필요 |
-| Supabase 계정 | — | 무료 플랜으로 충분 |
-| Vercel 계정 | — | 무료 플랜으로 Serverless API 운용 가능 |
+| Supabase 계정 | - | 무료 플랜으로 충분 |
+| Vercel 계정 | - | 무료 플랜으로 Serverless API 운용 가능 |
 
 ### 환경 변수
 
@@ -90,7 +90,7 @@ Vercel 대시보드 Settings → Environment Variables에서 아래 값을 설�
 | 변수명 | 설명 |
 |--------|------|
 | `SUPABASE_URL` | Supabase 프로젝트 URL (예: `https://xxxx.supabase.co`) |
-| `SUPABASE_SERVICE_ROLE_KEY` | 쓰기 전용 Service Role Key — Serverless Function에서만 사용 |
+| `SUPABASE_SERVICE_ROLE_KEY` | 쓰기 전용 Service Role Key - Serverless Function에서만 사용 |
 
 브라우저 읽기용 anon key는 `supabaseClient.js`에 직접 입력합니다.
 
@@ -104,11 +104,11 @@ cd toeic-flashcards
 # 2. Supabase SQL Editor에서 테이블 생성
 #    supabase-schema.sql 내용을 실행하면 words 테이블과 RLS 정책이 생성됩니다
 
-# 3. 로컬 서버 실행 (런타임 의존성 없음 — npm install 불필요)
+# 3. 로컬 서버 실행 (런타임 의존성 없음 - npm install 불필요)
 node server.js
 # → http://localhost:4173 에서 확인
 
-# 4. 배포 — main 브랜치 push 시 Vercel이 자동으로 정적 파일과 api/words.js를 배포합니다
+# 4. 배포 - main 브랜치 push 시 Vercel이 자동으로 정적 파일과 api/words.js를 배포합니다
 ```
 
 ---
@@ -179,7 +179,7 @@ graph TD
 
 ## 🎯 습득 기술 및 역량
 
-포트폴리오용 — 이 프로젝트에서 배우고 적용한 기술:
+포트폴리오용 - 이 프로젝트에서 배우고 적용한 기술:
 
 | 분류 | 기술 | 적용 내용 |
 |------|------|-----------|
@@ -198,11 +198,11 @@ graph TD
 
 ## 📄 라이선스
 
-MIT License — 자세한 내용은 [LICENSE](LICENSE) 파일을 참고하세요.
+MIT License - 자세한 내용은 [LICENSE](LICENSE) 파일을 참고하세요.
 
 **참고 문서**
 
 - [Supabase Docs](https://supabase.com/docs)
 - [Vercel Serverless Functions](https://vercel.com/docs/functions)
-- [Web App Manifest — MDN](https://developer.mozilla.org/en-US/docs/Web/Manifest)
-- [Web Speech API — MDN](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API)
+- [Web App Manifest - MDN](https://developer.mozilla.org/en-US/docs/Web/Manifest)
+- [Web Speech API - MDN](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API)
